@@ -10,9 +10,9 @@ df_eg <- load_tree_data("golfpark-eg", long = FALSE)
 df_bøg <- load_tree_data("golfpark-bøg", long = FALSE)
 
 means_long <- bind_rows(
-  df_dmi %>% transmute(Dato, Source = "DMI", Value = Middel),
-  df_eg %>% transmute(Dato, Source = "Eg", Value = Middel),
-  df_bøg %>% transmute(Dato, Source = "Bøg", Value = Middel)
+  df_dmi %>% transmute(Dato, Kilde = "DMI", Value = Middel),
+  df_eg %>% transmute(Dato, Kilde = "Eg", Value = Middel),
+  df_bøg %>% transmute(Dato, Kilde = "Bøg", Value = Middel)
 )
 
 create_line_chart(
@@ -20,10 +20,11 @@ create_line_chart(
   file_name = "middel-compare",
   title = "Middeltemperatur – DMI vs. Eg vs. Bøg",
   y_label = "Middeltemperatur",
-  type_col = "Source",
+  type_col = "Kilde",
   color_values = c(
     "DMI" = "black",
-    "Eg"  = "green",
+    "Eg"  = "darkgreen",
     "Bøg" = "brown"
-  )
+  ),
+  show_legend_title = FALSE
 )

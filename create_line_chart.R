@@ -7,8 +7,8 @@ create_line_chart <- function(df_long,
                                 "Middel" = "green",
                                 "Laveste" = "blue",
                                 "Højeste" = "red"
-                              )) {
-  # Build plot
+                              ),
+                              show_legend_title = TRUE) {
   p <- ggplot(
     df_long,
     aes(
@@ -26,7 +26,6 @@ create_line_chart <- function(df_long,
     scale_y_continuous(
       breaks = seq(-5, max(df_long$Value, na.rm = TRUE), by = 5)
     ) +
-    # Use custom colors if provided, otherwise default palette
     {
       if (is.null(color_values)) {
         scale_color_discrete(name = type_col)
@@ -45,10 +44,10 @@ create_line_chart <- function(df_long,
       plot.background = element_rect(fill = "white", color = NA),
       legend.background = element_rect(fill = "white", color = NA),
       legend.box.background = element_rect(fill = "white", color = NA),
-      plot.title = element_text(hjust = 0.5)
+      plot.title = element_text(hjust = 0.5),
+      legend.title = if (show_legend_title) element_text() else element_blank()
     )
 
-  # Save
   ggsave(
     paste0("plots/", file_name, ".png"),
     plot = p,
