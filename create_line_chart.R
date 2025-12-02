@@ -1,4 +1,4 @@
-create_line_chart <- function(file_name) {
+create_line_chart <- function(df_long, file_name) {
   ggplot(df_long, aes(x = Dato, y = Value, color = Type)) +
     geom_line() +
     geom_point(shape = 21, fill = "transparent", size = 3, stroke = 1) +
