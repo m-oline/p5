@@ -4,7 +4,6 @@ library(dplyr)
 
 load_tree_data <- function(file_name, long = TRUE) {
   data <- read.csv(paste0("data/", file_name, ".csv"), sep = ";")
-  str(data)
 
   data$Tid <- as.POSIXct(data$Tid, format = "%Y-%m-%d %H:%M:%S")
 
