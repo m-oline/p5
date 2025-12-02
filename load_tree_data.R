@@ -2,7 +2,7 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 
-load_tree_data <- function(file_name) {
+load_tree_data <- function(file_name, long = TRUE) {
   data <- read.csv(paste0("data/", file_name, ".csv"), sep = ";")
   str(data)
 
@@ -16,6 +16,10 @@ load_tree_data <- function(file_name) {
       Laveste = min(Temperatur, na.rm = TRUE),
       Højeste = max(Temperatur, na.rm = TRUE)
     )
+
+  if (!long) {
+    return(daily)
+  }
 
   daily$Dato <- as.POSIXct(daily$Dato)
 
