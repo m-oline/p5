@@ -8,6 +8,11 @@ create_line_chart <- function(df_long,
                                 "Laveste" = "blue",
                                 "Højeste" = "red"
                               ),
+                              legend_labels = c(
+                                "Maximum",
+                                "Minimum",
+                                "Middel"
+                              ),
                               show_legend_title = FALSE) {
   p <- ggplot(
     df_long,
@@ -19,6 +24,13 @@ create_line_chart <- function(df_long,
   ) +
     geom_line() +
     geom_point(shape = 21, fill = "transparent", size = 3, stroke = 1) +
+    geom_smooth(
+      aes(group = 1),
+      method = "lm",
+      se = FALSE,
+      color = "black",
+      linewidth = 1
+    ) +
     scale_x_datetime(
       breaks = seq(min(df_long$Dato), max(df_long$Dato), by = "2 days"),
       date_labels = "%Y-%m-%d"
@@ -30,7 +42,7 @@ create_line_chart <- function(df_long,
       if (is.null(color_values)) {
         scale_color_discrete(name = type_col)
       } else {
-        scale_color_manual(values = color_values, name = type_col)
+        scale_color_manual(values = color_values, name = type_col, labels = legend_labels)
       }
     } +
     labs(
