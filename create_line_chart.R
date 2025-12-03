@@ -4,7 +4,7 @@ create_line_chart <- function(df_long,
                               y_label = "Temperatur",
                               type_col = "Type",
                               color_values = c(
-                                "Middel" = "green",
+                                "Middel" = "green3",
                                 "Laveste" = "blue",
                                 "Højeste" = "red"
                               ),
@@ -59,4 +59,3 @@ create_line_chart <- function(df_long,
 
   invisible(p)
 }
-
