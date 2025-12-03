@@ -8,7 +8,7 @@ create_line_chart <- function(df_long,
                                 "Laveste" = "blue",
                                 "Højeste" = "red"
                               ),
-                              show_legend_title = TRUE) {
+                              show_legend_title = FALSE) {
   p <- ggplot(
     df_long,
     aes(
@@ -59,3 +59,4 @@ create_line_chart <- function(df_long,
 
   invisible(p)
 }
+
