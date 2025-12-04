@@ -13,7 +13,8 @@ create_line_chart <- function(df_long,
                                 "Minimum",
                                 "Middel"
                               ),
-                              show_legend_title = FALSE) {
+                              show_legend_title = FALSE,
+                              date_offset = 0) {
   p <- ggplot(
     df_long,
     aes(
@@ -32,7 +33,11 @@ create_line_chart <- function(df_long,
       linewidth = 1
     ) +
     scale_x_datetime(
-      breaks = seq(min(df_long$Dato), max(df_long$Dato), by = "2 days"),
+      breaks = as.POSIXct(seq(
+        from = as.Date(min(df_long$Dato)) + date_offset,
+        to   = as.Date(max(df_long$Dato)) + date_offset,
+        by   = 2
+      )),
       date_labels = "%Y-%m-%d"
     ) +
     scale_y_continuous(
