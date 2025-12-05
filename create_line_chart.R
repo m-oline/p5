@@ -4,7 +4,7 @@ create_line_chart <- function(df_long,
                               y_label = "Temperatur",
                               type_col = "Type",
                               color_values = c(
-                                "Middel" = "green3",
+                                "Middel"  = "green3",
                                 "Laveste" = "blue",
                                 "Højeste" = "red"
                               ),
@@ -41,7 +41,8 @@ create_line_chart <- function(df_long,
       date_labels = "%Y-%m-%d"
     ) +
     scale_y_continuous(
-      breaks = seq(-5, max(df_long$Value, na.rm = TRUE), by = 5)
+      limits = c(-5, 25),
+      breaks = seq(-5, 25, by = 5)
     ) +
     {
       if (is.null(color_values)) {
@@ -57,22 +58,22 @@ create_line_chart <- function(df_long,
     ) +
     theme_minimal() +
     theme(
-      panel.background = element_rect(fill = "white", color = NA),
-      plot.background = element_rect(fill = "white", color = NA),
-      legend.background = element_rect(fill = "white", color = NA),
+      panel.background   = element_rect(fill = "white", color = NA),
+      plot.background    = element_rect(fill = "white", color = NA),
+      legend.background  = element_rect(fill = "white", color = NA),
       legend.box.background = element_rect(fill = "white", color = NA),
-      plot.title = element_text(hjust = 0.5),
-      legend.title = if (show_legend_title) element_text() else element_blank()
+      plot.title         = element_text(hjust = 0.5),
+      legend.title       = if (show_legend_title) element_text() else element_blank()
     )
-
+  
   ggsave(
     paste0("plots/", file_name, ".png"),
-    plot = p,
-    width = 25,
+    plot   = p,
+    width  = 25,
     height = 6,
-    dpi = 300,
-    bg = "white"
+    dpi    = 300,
+    bg     = "white"
   )
-
+  
   invisible(p)
 }
