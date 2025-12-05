@@ -21,6 +21,7 @@ create_line_chart(
   title = "Middeltemperatur – DMI vs. Eg vs. Bøg",
   y_label = "Middeltemperatur",
   type_col = "Kilde",
+  date_offset = 1,
   color_values = c(
     "DMI" = "black",
     "Eg"  = "darkgreen",
