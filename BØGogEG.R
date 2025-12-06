@@ -17,7 +17,28 @@ anova_by_date <- dat %>%
   do(tidy(aov(Value ~ group, data = .)))
 
 result <- anova_by_date %>%
-  filter(term == "group") %>% # keep only the group effect
+  filter(term == "group") %>%
   select(Dato, F.value = statistic, p.value)
 
-result
+write.table(
+  result,
+  file = "anova-bøg-eg.txt",
+  sep = "\t",
+  row.names = FALSE,
+  quote = FALSE
+)
+tukey_by_date <- dat %>%
+  group_by(Dato) %>%
+  do(
+    aov(Value ~ group, data = .) %>%
+      TukeyHSD("group") %>%
+      tidy()
+  )
+
+write.table(
+  tukey_by_date,
+  file = "tukey_by_date_results.txt",
+  sep = "\t",
+  row.names = FALSE,
+  quote = FALSE
+)

@@ -1,0 +1,32 @@
+
+> cat("=== ANOVA: Value ~ Type ===\n\n")
+=== ANOVA: Value ~ Type ===
+
+
+> print(summary(anova_result))
+             Df Sum Sq Mean Sq F value Pr(>F)    
+Type          2  623.3  311.64   51.57 <2e-16 ***
+Residuals   126  761.5    6.04                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> cat("\n\n=== Tukey HSD (pairwise comparisons of Type) ===\n\n")
+
+
+=== Tukey HSD (pairwise comparisons of Type) ===
+
+
+> print(tukey_result)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = Value ~ Type, data = golf_long)
+
+$Type
+                    diff      lwr      upr   p adj
+Middel-Laveste  2.755595 1.498163 4.013028 2.4e-06
+Højeste-Laveste 5.383721 4.126288 6.641153 0.0e+00
+Højeste-Middel  2.628126 1.370693 3.885558 6.7e-06
+
+
+> sink()

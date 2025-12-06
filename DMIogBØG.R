@@ -8,10 +8,10 @@ dmi <- load_dmi_data(file_name = "dmi-hourly.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
+eg <- load_tree_data("golfpark-bøg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "bøg")
 
 dat <- bind_rows(dmi, eg) %>%
   mutate(Dag = as.Date(Dato)) # calendar day
@@ -51,9 +51,8 @@ result <- do.call(rbind, result_list)
 
 write.table(
   result,
-  file = "anova-dmi-eg.txt",
+  file = "anova-dmi-bøg.txt",
   sep = "\t",
   row.names = FALSE,
   quote = FALSE
 )
-
