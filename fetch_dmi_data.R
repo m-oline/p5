@@ -12,7 +12,7 @@ library(lubridate)
 # Your API key (you can also read this from an env var if you prefer)
 api_key <- "c2db9a70-67d5-4234-8998-f3e2789ce92a"
 
-base_url <- "https://dmigw.govcloud.dk/v2/climateData/collections/countryValue/items"
+base_url <- "https://dmigw.govcloud.dk/v2/climateData/collections/municipalityValue/items"
 
 # We want 22 Sep–3 Nov 2025 in Denmark time.
 # DMI examples use UTC with a 23:00 day before to 22:00 same day pattern.
@@ -29,6 +29,7 @@ get_param_hourly <- function(param_id) {
     url = base_url,
     query = list(
       `api-key`      = api_key,
+      municipalityId = "0851",
       parameterId    = param_id,
       timeResolution = "hour",
       datetime       = datetime_range,
@@ -87,18 +88,21 @@ df_all <- df_all %>%
   arrange(datetime_local)
 
 ## --- SELECT FINAL COLUMNS & SAVE CSV -------------------------------------
-
 final <- df_all %>%
+  mutate(
+    # force a consistent string representation
+    Dato = format(datetime_local, "%Y-%m-%d %H:%M:%S")
+  ) %>%
   select(
-    datetime = datetime_local,
-    min_temp,
-    mean_temp,
-    max_temp
+    Dato,
+    Laveste = min_temp,
+    Middel  = mean_temp,
+    Højeste = max_temp
   )
 
-out_file <- "dmi_hourly_min_mean_max_2025-09-22_2025-11-03.csv"
+out_file <- "data/dmi-hourly.csv"
 
-write.csv(final, out_file, row.names = FALSE)
+write.csv2(final, out_file, row.names = FALSE)
 
 cat(
   "Wrote CSV with", nrow(final), "rows to:\n",
