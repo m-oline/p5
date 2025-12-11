@@ -131,17 +131,16 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     labels = c(
       "bøg" = "Bøg = grøn",
       "eg"  = "Eg = rød"
-      
     )
   ) +
   labs(
     x = "Dato",
     y = "Residual (°C)",
-    title = "Residualplot med s, ±1s, ±2s og andele for Eg og Bøg"
+    title = "Residualplot med s, ±1s, ±2s og andele for T1 og T2"
   ) +
   theme_minimal() +
   theme(
     plot.title      = element_text(hjust = 0.5),
     legend.position = "right"
   )
-write.csv(dat_resid, "EGogBØG_dat_resid.csv", row.names = FALSE)
+write.csv(dat_resid, "T1ogT2_dat_resid.csv", row.names = FALSE)

@@ -93,7 +93,7 @@ ggplot(dat_avg, aes(x = Dato, y = Value)) +
   labs(
     x = "Dato",
     y = "Temperatur (°C)",
-    title = "Korrelation for DMI og Bøg over tid"
+    title = "Korrelation for DMI og T1 over tid"
   ) +
   theme_minimal() +
   theme(

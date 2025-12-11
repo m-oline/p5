@@ -137,7 +137,7 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
   labs(
     x = "Dato",
     y = "Residual (°C)",
-    title = "Residualplot med s, ±1s, ±2s og andele for DMI og Eg"
+    title = "Residualplot med s, ±1s, ±2s og andele for DMI og T2"
   ) +
   theme_minimal() +
   theme(
