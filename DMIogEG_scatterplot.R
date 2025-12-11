@@ -9,7 +9,6 @@ dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-
 eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
@@ -23,6 +22,36 @@ dat_avg <- dat %>%
     Value = mean(Value, na.rm = TRUE),
     .groups = "drop"
   )
+
+dmi_daily <- dmi %>%
+  mutate(Dato = as.Date(Dato)) %>%
+  group_by(Dato) %>%
+  summarise(dmi = mean(Value, na.rm = TRUE), .groups = "drop")
+
+eg_daily <- eg %>%
+  mutate(Dato = as.Date(Dato)) %>%
+  group_by(Dato) %>%
+  summarise(`eg` = mean(Value, na.rm = TRUE), .groups = "drop")
+
+dat_corr <- inner_join(dmi_daily, eg_daily, by = "Dato")
+
+dat_corr_complete <- dat_corr %>%
+  filter(!is.na(dmi), !is.na(`eg`))
+
+if (nrow(dat_corr_complete) > 0) {
+  cor_val <- cor(dat_corr_complete$dmi, dat_corr_complete$`eg`, method = "pearson")
+} else {
+  cor_val <- NA_real_
+}
+
+r_label <- if (is.na(cor_val)) {
+  "r: ingen fælles datoer"
+} else {
+  paste0("r = ", round(cor_val, 2))
+}
+
+x_pos <- min(dat_avg$Dato, na.rm = TRUE)
+y_pos <- 19
 
 ggplot() +
   geom_point(
@@ -42,9 +71,20 @@ ggplot() +
     se = FALSE,
     color = "black"
   ) +
+  annotate(
+    "text",
+    x = x_pos,
+    y = y_pos,
+    label = r_label,
+    hjust = 0, vjust = 1
+  ) +
+  scale_y_continuous(limits = c(0, 20)) +
   labs(
     x = "Dato",
     y = "Temperatur (°C)",
     title = "Temperaturer fra DMI (grøn) og Eg (rød) over tid"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
