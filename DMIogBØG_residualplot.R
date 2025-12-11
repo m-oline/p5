@@ -9,12 +9,12 @@ dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
+bøg <- load_tree_data("golfpark-bøg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "bøg")
 
-dat <- bind_rows(dmi, eg)
+dat <- bind_rows(dmi, bøg)
 
 dat_avg <- dat %>%
   mutate(Dato = as.Date(Dato)) %>%
@@ -25,17 +25,17 @@ dat_avg <- dat %>%
   )
 
 fit_dmi <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "dmi"))
-fit_eg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "eg"))
+fit_bøg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "bøg"))
 
 dat_dmi <- dat_avg %>%
   filter(group == "dmi") %>%
   mutate(resid = resid(fit_dmi))
 
-dat_eg <- dat_avg %>%
-  filter(group == "eg") %>%
+dat_bøg <- dat_avg %>%
+  filter(group == "bøg") %>%
   mutate(resid = resid(fit_eg))
 
-dat_resid <- bind_rows(dat_dmi, dat_eg)
+dat_resid <- bind_rows(dat_dmi, dat_bøg)
 
 res_sd <- sd(dat_resid$resid, na.rm = TRUE)
 
@@ -65,8 +65,8 @@ res_range <- range(dat_resid$resid, na.rm = TRUE)
 y_min <- res_range[1]
 y_max <- res_range[2]
 
-y_s_label <- y_max + 0.1 * (y_max - y_min)
-y_shares_top <- y_s_label - 0.16 * (y_max - y_min)
+y_s_label <- y_max + 0.15 * (y_max - y_min)
+y_shares_top <- y_s_label - 1.03 * (y_max - y_min)
 
 break_dates <- as.Date(c("2025-10-01", "2025-10-15", "2025-11-01"))
 
@@ -127,21 +127,21 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     name = NULL,
     values = c(
       "dmi" = "green",
-      "eg"  = "red"
+      "bøg" = "red"
     ),
     labels = c(
       "dmi" = "DMI = grøn",
-      "eg"  = "Eg = rød"
+      "bøg"  = "Bøg = rød"
     )
   ) +
   labs(
     x = "Dato",
     y = "Residual (°C)",
-    title = "Residualplot med s, ±1s, ±2s og andele for DMI og Eg"
+    title = "Residualplot med s, ±1s, ±2s og andele for DMI og Bøg"
   ) +
   theme_minimal() +
   theme(
     plot.title      = element_text(hjust = 0.5),
     legend.position = "right"
   )
-write.csv(dat_resid, "DMIogEG_dat_resid.csv", row.names = FALSE)
+write.csv(dat_resid, "DMIogBØG_dat_resid.csv", row.names = FALSE)
