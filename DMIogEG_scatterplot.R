@@ -4,7 +4,7 @@ source("./load_dmi_data.R")
 library(dplyr)
 library(ggplot2)
 
-dmi <- load_dmi_data(file_name = "dmi-hourly.csv") %>%
+dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
