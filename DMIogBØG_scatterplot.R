@@ -4,8 +4,6 @@ source("./load_dmi_data.R")
 library(dplyr)
 library(ggplot2)
 
-# --- 1. Indlæs data -----------------------------------------------------
-
 dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
@@ -25,7 +23,6 @@ dat_avg <- dat %>%
     .groups = "drop"
   )
 
-# --- 2. Daglige middel for korrelation ----------------------------------
 
 dmi_daily <- dmi %>%
   mutate(Dato = as.Date(Dato)) %>%
@@ -54,19 +51,13 @@ r_label <- if (is.na(cor_val)) {
   paste0("r = ", round(cor_val, 2))
 }
 
-# --- 3. Forberedelse til plot -------------------------------------------
-
-# Sørg for at Dato er Date i det data, vi plotter
 dat_avg$Dato <- as.Date(dat_avg$Dato)
 
-# position til teksten
 x_pos <- min(dat_avg$Dato, na.rm = TRUE)
 y_pos <- 19
 
-# ønskede dato-brud på x-aksen
 break_dates <- as.Date(c("2025-10-01", "2025-10-15", "2025-11-01"))
 
-# --- 4. Plot: DMI vs Bøg ------------------------------------------------
 
 ggplot(dat_avg, aes(x = Dato, y = Value)) +
   geom_point(aes(color = group)) +
@@ -84,14 +75,12 @@ ggplot(dat_avg, aes(x = Dato, y = Value)) +
     vjust = 1
   ) +
   scale_y_continuous(limits = c(0, 20)) +
-  # x-aksen viser kun 01-10-2025, 15-10-2025 og 01-11-2025
   scale_x_date(
     breaks = break_dates,
     date_labels = "%d-%m-%Y"
   ) +
-  # forklaringsboks til højre: DMI = grøn, Bøg = rød
   scale_color_manual(
-    name   = NULL,
+    name = NULL,
     values = c(
       "dmi" = "green",
       "bøg" = "red"
