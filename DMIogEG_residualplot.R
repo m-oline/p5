@@ -9,12 +9,13 @@ dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
+# var + group renamed from eg → T2
+T2 <- load_tree_data("golfpark-eg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "T2")
 
-dat <- bind_rows(dmi, eg)
+dat <- bind_rows(dmi, T2)
 
 dat_avg <- dat %>%
   mutate(Dato = as.Date(Dato)) %>%
@@ -25,17 +26,17 @@ dat_avg <- dat %>%
   )
 
 fit_dmi <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "dmi"))
-fit_eg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "eg"))
+fit_T2 <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "T2"))
 
 dat_dmi <- dat_avg %>%
   filter(group == "dmi") %>%
   mutate(resid = resid(fit_dmi))
 
-dat_eg <- dat_avg %>%
-  filter(group == "eg") %>%
-  mutate(resid = resid(fit_eg))
+dat_T2 <- dat_avg %>%
+  filter(group == "T2") %>%
+  mutate(resid = resid(fit_T2))
 
-dat_resid <- bind_rows(dat_dmi, dat_eg)
+dat_resid <- bind_rows(dat_dmi, dat_T2)
 
 res_sd <- sd(dat_resid$resid, na.rm = TRUE)
 
@@ -127,11 +128,11 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     name = NULL,
     values = c(
       "dmi" = "green",
-      "eg"  = "red"
+      "T2"  = "red"
     ),
     labels = c(
       "dmi" = "DMI = grøn",
-      "eg"  = "Eg = rød"
+      "T2"  = "T2 = rød"
     )
   ) +
   labs(
@@ -144,4 +145,6 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     plot.title      = element_text(hjust = 0.5),
     legend.position = "right"
   )
-write.csv(dat_resid, "DMIogEG_dat_resid.csv", row.names = FALSE)
+
+# hvis du også vil have filnavnet til at matche, kan du evt. ændre EG → T2 her
+write.csv(dat_resid, "DMIogT2_dat_resid.csv", row.names = FALSE)

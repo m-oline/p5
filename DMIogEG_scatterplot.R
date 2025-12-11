@@ -4,18 +4,17 @@ source("./load_dmi_data.R")
 library(dplyr)
 library(ggplot2)
 
-
 dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
+T2 <- load_tree_data("golfpark-eg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "T2")
 
-dat <- bind_rows(dmi, eg)
+dat <- bind_rows(dmi, T2)
 
 dat_avg <- dat %>%
   group_by(Dato, group) %>%
@@ -24,24 +23,23 @@ dat_avg <- dat %>%
     .groups = "drop"
   )
 
-
 dmi_daily <- dmi %>%
   mutate(Dato = as.Date(Dato)) %>%
   group_by(Dato) %>%
   summarise(dmi = mean(Value, na.rm = TRUE), .groups = "drop")
 
-eg_daily <- eg %>%
+T2_daily <- T2 %>% 
   mutate(Dato = as.Date(Dato)) %>%
   group_by(Dato) %>%
-  summarise(`eg` = mean(Value, na.rm = TRUE), .groups = "drop")
+  summarise(T2 = mean(Value, na.rm = TRUE), .groups = "drop")
 
-dat_corr <- inner_join(dmi_daily, eg_daily, by = "Dato")
+dat_corr <- inner_join(dmi_daily, T2_daily, by = "Dato")
 
 dat_corr_complete <- dat_corr %>%
-  filter(!is.na(dmi), !is.na(`eg`))
+  filter(!is.na(dmi), !is.na(T2))
 
 if (nrow(dat_corr_complete) > 0) {
-  cor_val <- cor(dat_corr_complete$dmi, dat_corr_complete$`eg`, method = "pearson")
+  cor_val <- cor(dat_corr_complete$dmi, dat_corr_complete$T2, method = "pearson")
 } else {
   cor_val <- NA_real_
 }
@@ -82,11 +80,11 @@ ggplot(dat_avg, aes(x = Dato, y = Value)) +
     name = NULL,
     values = c(
       "dmi" = "green",
-      "eg"  = "red"
+      "T2"  = "red"
     ),
     labels = c(
       "dmi" = "DMI = grøn",
-      "eg"  = "Eg = rød"
+      "T2"  = "T2 = rød"
     )
   ) +
   labs(

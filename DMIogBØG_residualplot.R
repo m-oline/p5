@@ -9,12 +9,14 @@ dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-bøg <- load_tree_data("golfpark-bøg", long = TRUE) %>%
+# --- was: bøg <- ... mutate(group = "bøg")
+T1 <- load_tree_data("golfpark-bøg", long = TRUE) %>%   # name unchanged in file
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "bøg")
+  mutate(group = "T1")                                  # <<< change group value
 
-dat <- bind_rows(dmi, bøg)
+# --- was: bind_rows(dmi, bøg)
+dat <- bind_rows(dmi, T1)                               # <<< use T1 object
 
 dat_avg <- dat %>%
   mutate(Dato = as.Date(Dato)) %>%
@@ -25,17 +27,21 @@ dat_avg <- dat %>%
   )
 
 fit_dmi <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "dmi"))
-fit_bøg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "bøg"))
+
+# --- was: fit_bøg with group == "bøg"
+fit_T1 <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "T1"))   # <<<
 
 dat_dmi <- dat_avg %>%
   filter(group == "dmi") %>%
   mutate(resid = resid(fit_dmi))
 
-dat_bøg <- dat_avg %>%
-  filter(group == "bøg") %>%
-  mutate(resid = resid(fit_eg))
+# --- was: dat_bøg, group == "bøg", resid(fit_eg)
+dat_T1 <- dat_avg %>%                                                  # <<<
+  filter(group == "T1") %>%                                            # <<<
+  mutate(resid = resid(fit_T1))                                        # <<< (also fixes typo)
 
-dat_resid <- bind_rows(dat_dmi, dat_bøg)
+# --- was: bind_rows(dat_dmi, dat_bøg)
+dat_resid <- bind_rows(dat_dmi, dat_T1)                                # <<<
 
 res_sd <- sd(dat_resid$resid, na.rm = TRUE)
 
@@ -127,11 +133,11 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     name = NULL,
     values = c(
       "dmi" = "green",
-      "bøg" = "red"
+      "T1"  = "red"             # <<< key must match group values
     ),
     labels = c(
-      "dmi" = "DMI = grøn",
-      "bøg"  = "Bøg = rød"
+      "dmi" = "DMI = grøn",     # unchanged
+      "T1"  = "T1 = rød"        # <<< explanation box text
     )
   ) +
   labs(
@@ -144,4 +150,5 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     plot.title      = element_text(hjust = 0.5),
     legend.position = "right"
   )
+
 write.csv(dat_resid, "DMIogT1_dat_resid.csv", row.names = FALSE)

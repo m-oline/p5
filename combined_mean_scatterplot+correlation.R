@@ -9,17 +9,17 @@ dmi <- load_dmi_data(file_name = "dmi-data.csv") %>%
   select(Dato, Value) %>%
   mutate(group = "dmi")
 
-eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
+T2 <- load_tree_data("golfpark-eg", long = TRUE) %>%    # eg → T2
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "T2")
 
-bøg <- load_tree_data("golfpark-bøg", long = TRUE) %>%
+T1 <- load_tree_data("golfpark-bøg", long = TRUE) %>%   # bøg → T1
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "bøg")
+  mutate(group = "T1")
 
-dat <- bind_rows(dmi, eg, bøg)
+dat <- bind_rows(dmi, T2, T1)
 
 dat_avg <- dat %>%
   group_by(Dato, group) %>%
@@ -28,47 +28,45 @@ dat_avg <- dat %>%
     .groups = "drop"
   )
 
-
 dmi_daily <- dmi %>%
   mutate(Dato = as.Date(Dato)) %>%
   group_by(Dato) %>%
   summarise(dmi = mean(Value, na.rm = TRUE), .groups = "drop")
 
-eg_daily <- eg %>%
+T2_daily <- T2 %>%                                      # eg_daily → T2_daily
   mutate(Dato = as.Date(Dato)) %>%
   group_by(Dato) %>%
-  summarise(eg = mean(Value, na.rm = TRUE), .groups = "drop")
+  summarise(T2 = mean(Value, na.rm = TRUE), .groups = "drop")
 
-bog_daily <- bøg %>%
+T1_daily <- T1 %>%                                      # bog_daily → T1_daily
   mutate(Dato = as.Date(Dato)) %>%
   group_by(Dato) %>%
-  summarise(`bøg` = mean(Value, na.rm = TRUE), .groups = "drop")
+  summarise(T1 = mean(Value, na.rm = TRUE), .groups = "drop")
 
 dat_corr <- dmi_daily %>%
-  inner_join(eg_daily, by = "Dato") %>%
-  inner_join(bog_daily, by = "Dato")
+  inner_join(T2_daily, by = "Dato") %>%
+  inner_join(T1_daily, by = "Dato")
 
 dat_corr_complete <- dat_corr %>%
-  filter(!is.na(dmi), !is.na(eg), !is.na(`bøg`))
-
+  filter(!is.na(dmi), !is.na(T2), !is.na(T1))
 
 if (nrow(dat_corr_complete) > 0) {
-  r_dmi_eg <- cor(dat_corr_complete$dmi, dat_corr_complete$eg, method = "pearson")
-  r_dmi_bog <- cor(dat_corr_complete$dmi, dat_corr_complete$`bøg`, method = "pearson")
-  r_eg_bog <- cor(dat_corr_complete$eg, dat_corr_complete$`bøg`, method = "pearson")
+  r_dmi_T2 <- cor(dat_corr_complete$dmi, dat_corr_complete$T2, method = "pearson")
+  r_dmi_T1 <- cor(dat_corr_complete$dmi, dat_corr_complete$T1, method = "pearson")
+  r_T2_T1  <- cor(dat_corr_complete$T2,  dat_corr_complete$T1, method = "pearson")
 } else {
-  r_dmi_eg <- NA_real_
-  r_dmi_bog <- NA_real_
-  r_eg_bog <- NA_real_
+  r_dmi_T2 <- NA_real_
+  r_dmi_T1 <- NA_real_
+  r_T2_T1  <- NA_real_
 }
 
 r_label <- if (nrow(dat_corr_complete) == 0) {
   "r: ingen fælles datoer"
 } else {
   paste0(
-    "r(DMI, Eg) = ",  round(r_dmi_eg, 2), "   ",
-    "r(DMI, Bøg) = ", round(r_dmi_bog, 2), "   ",
-    "r(Eg, Bøg) = ",  round(r_eg_bog, 2)
+    "r(DMI, T2) = ", round(r_dmi_T2, 2), "   ",
+    "r(DMI, T1) = ", round(r_dmi_T1, 2), "   ",
+    "r(T2, T1) = ",  round(r_T2_T1, 2)
   )
 }
 
@@ -78,7 +76,6 @@ x_pos <- min(dat_avg$Dato, na.rm = TRUE)
 y_pos <- 19
 
 break_dates <- as.Date(c("2025-10-01", "2025-10-15", "2025-11-01"))
-
 
 ggplot(dat_avg, aes(x = Dato, y = Value)) +
   geom_point(aes(color = group)) +
@@ -104,13 +101,13 @@ ggplot(dat_avg, aes(x = Dato, y = Value)) +
     name = NULL,
     values = c(
       "dmi" = "blue",
-      "eg"  = "green4",
-      "bøg" = "red"
+      "T2"  = "green4",
+      "T1"  = "red"
     ),
     labels = c(
       "dmi" = "DMI = blå",
-      "eg"  = "Eg = grøn",
-      "bøg" = "Bøg = rød"
+      "T2"  = "T2 = grøn",
+      "T1"  = "T1 = rød"
     )
   ) +
   labs(

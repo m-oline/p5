@@ -6,12 +6,12 @@ library(ggplot2)
 eg <- load_tree_data(file_name = "golfpark-eg") %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "eg")
+  mutate(group = "T2") # was "eg"
 
 bøg <- load_tree_data("golfpark-bøg", long = TRUE) %>%
   filter(Type == "Middel") %>%
   select(Dato, Value) %>%
-  mutate(group = "bøg")
+  mutate(group = "T1") # was "bøg"
 
 dat <- bind_rows(eg, bøg)
 
@@ -23,16 +23,18 @@ dat_avg <- dat %>%
     .groups = "drop"
   )
 
-fit_eg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "eg"))
-fit_bøg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "bøg"))
+## models – now using T1/T2 instead of eg/bøg
+fit_eg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "T2"))
+fit_bøg <- lm(Value ~ Dato, data = dat_avg %>% filter(group == "T1"))
 
+## residuals
 dat_eg <- dat_avg %>%
-  filter(group == "eg") %>%
-  mutate(resid = resid(fit_dmi))
+  filter(group == "T2") %>%
+  mutate(resid = resid(fit_eg)) # was fit_dmi (bug)
 
 dat_bøg <- dat_avg %>%
-  filter(group == "bøg") %>%
-  mutate(resid = resid(fit_eg))
+  filter(group == "T1") %>%
+  mutate(resid = resid(fit_bøg)) # was fit_eg (bug)
 
 dat_resid <- bind_rows(dat_eg, dat_bøg)
 
@@ -64,8 +66,8 @@ res_range <- range(dat_resid$resid, na.rm = TRUE)
 y_min <- res_range[1]
 y_max <- res_range[2]
 
-y_s_label <- y_max + 0.15 * (y_max - y_min)
-y_shares_top <- y_s_label - 1.03 * (y_max - y_min)
+y_s_label <- y_max + 0.1 * (y_max - y_min)
+y_shares_top <- y_s_label - 1.01 * (y_max - y_min)
 
 break_dates <- as.Date(c("2025-10-01", "2025-10-15", "2025-11-01"))
 
@@ -125,12 +127,12 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
   scale_color_manual(
     name = NULL,
     values = c(
-      "bøg" = "green",
-      "eg"  = "red"
+      "T1" = "green",
+      "T2" = "red"
     ),
     labels = c(
-      "bøg" = "Bøg = grøn",
-      "eg"  = "Eg = rød"
+      "T1" = "T1 = (grøn)",
+      "T2" = "T2 = (rød)"
     )
   ) +
   labs(
@@ -143,4 +145,5 @@ ggplot(dat_resid, aes(x = Dato, y = resid, color = group)) +
     plot.title      = element_text(hjust = 0.5),
     legend.position = "right"
   )
+
 write.csv(dat_resid, "T1ogT2_dat_resid.csv", row.names = FALSE)
