@@ -2,6 +2,8 @@ source("./load_tree_data.R")
 source("./load_dmi_data.R")
 
 library(dplyr)
+library(tidyr)
+library(ggplot2)
 
 dmi <- load_dmi_data(file_name = "dmi-hourly.csv") %>%
   filter(Type == "Middel") %>%
@@ -14,7 +16,7 @@ eg <- load_tree_data("golfpark-eg", long = TRUE) %>%
   mutate(group = "eg")
 
 dat <- bind_rows(dmi, eg) %>%
-  mutate(Dag = as.Date(Dato)) # calendar day
+  mutate(Dag = as.Date(Dato))
 
 dates <- sort(unique(dat$Dag))
 
@@ -28,9 +30,7 @@ result_list <- lapply(dates, function(d) {
   F_vals <- sm[, "F value"]
   p_vals <- sm[, "Pr(>F)"]
 
-  # if there is no F or p value (length 0), skip this day
   if (length(F_vals) < 1 || length(p_vals) < 1) {
-    # cat("Skipping", d, "- empty F or p\n")
     return(NULL)
   }
 
@@ -56,4 +56,3 @@ write.table(
   row.names = FALSE,
   quote = FALSE
 )
-
